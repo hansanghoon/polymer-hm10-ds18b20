@@ -2,6 +2,8 @@
 
 Connect to HM-10 BLE(Bluetooth Low Energe) module with DS18B20 1-wire digital thermometer using Polymer and Web Bluetooth technology.
 
+Tested with HM-10 copycat CS2541 module from bolutek.
+
 ## Install the Polymer-CLI
 
 First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.

@@ -1,6 +1,6 @@
-# \<hm10thermo\>
+# \<hm10thermo-app\>
 
-
+Connect to HM-10 BLE(Bluetooth Low Energe) module with DS18B20 1-wire digital thermometer using Polymer and Web Bluetooth technology.
 
 ## Install the Polymer-CLI
 

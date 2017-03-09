@@ -12,6 +12,10 @@ First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polyme
 $ polymer serve
 ```
 
+### Firebase App
+
+Visit [https://polymer-hm10-ds18b20.firebaseapp.com/](https://polymer-hm10-ds18b20.firebaseapp.com/)
+
 ## Building Your Application
 
 ```

@@ -9,7 +9,7 @@ Tested with HM-10 copycat CS2541 module from bolutek.
 Arduino Uno
 
 |arduino|HM-10|DS18B20|note|
-|--|--|--|--|
+|----|----|----|----|
 |5V or 3.3V|VCC|VCC|both 5/3.3V works|
 |Pin 8|TXD|||
 |Pin 7|RXD|||

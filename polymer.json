@@ -1,0 +1,9 @@
+{
+	"entrypoint": "index.html",
+	"shell" : "src/hm10thermo-app/hm10thermo-app.html",
+	"includeDependencies":[
+		"bower_components/webcomponentsjs/webcomponents-lite.js",
+		"bower_components/platium-sw/service-worker.js",
+		"manifest.json"
+	]
+}

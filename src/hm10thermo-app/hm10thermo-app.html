@@ -1,0 +1,143 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
+
+<link rel="import" href="../ble-hm10/ble-hm10.html">
+<link rel="import" href="../temperature-view/temperature-view.html">
+
+
+<dom-module id="hm10thermo-app">
+	<template>
+		<style is="custom-style">
+			:host {
+				display: block;
+			}
+			.container {
+				max-width: 400px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			.container {
+				@apply --paper-font-common-base;
+			}
+			.container paper-button {
+				width : 30%;
+			}
+			.container .info-text {
+				line-height : 2em;
+			}
+			h1 {
+				font-size:1.5em;
+				display:inline-block;
+			}
+		</style>
+		<div class="container">
+			<div>
+				<h1>BLE with Web Bluetooth</h1>
+				<paper-icon-button 
+					icon="[[computeLockIcon(signedIn)]]"
+					on-tap="toggleSignIn">
+				</paper-icon-button>
+				
+			</div>
+			<div class="info-text">
+				<span>Device Name : [[device.name]]</span>
+			</div>
+			<div class="info-text">
+				<span>Received : </span>
+				<temperature-view value=[[value]] unit="c" output-unit="c" fixed="2"/>
+			</div>
+			<div>
+				<paper-input label="Transmit Value" id="input" value="sample"></paper-input>
+				<paper-button raised disabled="[[device]]" on-tap="requestDevice">connect</paper-button>
+				<paper-button raised disabled="[[!device]]" on-tap="sendValue">send</paper-button>
+				<paper-button raised disabled="[[!device]]" on-tap="disconnect">disconnect</paper-button>
+			</div>
+		</div>
+		<ble-hm10 device={{device}} bytes={{bytes}} value={{value}}></ble-hm10>
+		<firebase-app
+			name="hm10"
+			api-key="AIzaSyCiztnoh1lCg1ayRPMgAIgYwOclQgSrp1g"
+			auth-domain="polymer-hm10-ds18b20.firebaseapp.com"
+			database-url="https://polymer-hm10-ds18b20.firebaseio.com">
+		</firebase-app>
+		<firebase-auth
+			id="auth"
+			app-name="hm10"
+			provider="google"
+			signed-in={{signedIn}}
+			user={{user}}>
+		</firebase-auth>
+		<firebase-document 
+			id="stat_current"
+			app-name="hm10"
+			path="[[_computeDevicePath(user,device)]]/current"
+			data={{valueStamp}}>
+		</firebase-document>
+		<!--<firebase-document 
+			id="stat_history"
+			app-name="hm10"
+			path="[[_computeDevicePath(user,device)]]/history"
+			data={{valueStamp}}>
+		</firebase-document>-->
+	</template>
+	<script>
+		Polymer({
+			is: 'hm10thermo-app',
+			properties : {
+				device : Object,
+				bytes : DataView,
+				value : {
+					type: String,
+					observer : 'commitValue'
+				},
+				valueStamp : Object,
+				signedIn : Boolean,
+				user : Object
+			},
+			_computeDevicePath: function(user, device) {
+				if(!user || !device) return null;
+				return `/users/${user.uid}/devices/${device.name}`;
+			},
+			requestDevice : function() {
+				this.$$('ble-hm10').connect()
+				.then(device=>{
+					this.sendValue();
+				});
+			},
+			sendValue : function() {
+				this.$$('ble-hm10').write(this.$$('paper-input').value);
+			},
+			disconnect : function() {
+				this.$$('ble-hm10').disconnect();
+			},
+			computeLockIcon: function(signedIn) {
+				return signedIn ? 'lock-open' : 'lock';
+			},
+			toggleSignIn: function() {
+				if(this.signedIn) {
+					this.$.auth.signOut();
+				} else {
+					this.$.auth.signInWithPopup().then(()=>{
+						this.sendValue();
+					});
+				}
+			},
+			commitValue: function(value){
+				if(value == null || !this.user) return;
+				this.valueStamp = {
+					value : parseFloat(value),
+					timestamp : new Date().getTime()
+				};
+				// this.$.document.save(`${this._computeDevicePath(this.user, this.device)}/history`).then(()=>{
+				// 	this.$.document.reset();
+				// })
+			}
+		});
+	</script>
+</dom-module>

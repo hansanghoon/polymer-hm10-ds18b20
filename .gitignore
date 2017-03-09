@@ -1,0 +1,8 @@
+.firebaserc
+.build
+.vscode
+bower_components
+build
+.DS_Store
+npm-debug.log
+firebase-debug.log

@@ -1,0 +1,6 @@
+{
+  "name": "hm10thermo",
+  "short_name": "hm10thermo",
+  "start_url": "index.html",
+  "display": "standalone"
+}

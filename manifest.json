@@ -1,6 +1,7 @@
 {
   "name": "hm10thermo",
   "short_name": "hm10thermo",
-  "start_url": "index.html",
+  "description": "HM-10 with Web Bluetooth",
+  "start_url": "/",
   "display": "standalone"
 }

@@ -83,7 +83,7 @@
 			id="stat_history"
 			app-name="hm10"
 			path="[[_computeDevicePath(user,device)]]/history"
-			data={{valueStamp}}>
+			data={{historyStamp}}>
 		</firebase-document>-->
 	</template>
 	<script>
@@ -93,16 +93,25 @@
 				device : Object,
 				bytes : DataView,
 				value : {
-					type: String,
+					type: Object,
 					observer : 'commitValue'
 				},
+				history : {
+					type: Array,
+					observer : '_historyChanged'
+				},
 				valueStamp : Object,
+				// historyStamp : Object,
 				signedIn : Boolean,
 				user : Object
 			},
 			_computeDevicePath: function(user, device) {
 				if(!user || !device) return null;
 				return `/users/${user.uid}/devices/${device.name}`;
+			},
+			_historyChanged: function(newHistory, oldHistory) {
+				console.log('new',newHistory);
+				console.log('old',oldHistory);
 			},
 			requestDevice : function() {
 				this.$$('ble-hm10').connect()
@@ -128,15 +137,30 @@
 					});
 				}
 			},
+			removeSnapshot : function(snapshot) {
+				snapshot.ref.remove();
+			},
 			commitValue: function(value){
 				if(value == null || !this.user) return;
 				this.valueStamp = {
 					value : parseFloat(value),
-					timestamp : new Date().getTime()
+					timestamp : Date.now()
 				};
-				// this.$.document.save(`${this._computeDevicePath(this.user, this.device)}/history`).then(()=>{
-				// 	this.$.document.reset();
-				// })
+				const db = firebase
+					.database(this.$$('firebase-app').app);
+
+				const refData = db.ref(`${this._computeDevicePath(this.user, this.device)}/history/${this.valueStamp.timestamp}`);
+				refData.set(this.valueStamp.value, err=>{err ? console.error(err) : null;});
+				//http://stackoverflow.com/questions/32004582/delete-firebase-data-older-than-2-hours
+				const ref = db.ref(`${this._computeDevicePath(this.user, this.device)}/history`)
+				.orderByKey()
+				.endAt(String(Date.now() - 2*24*60*60*1000))
+				.limitToLast(1);
+				if(this.oldRef) {
+					this.oldRef.off('child_added', this.removeSnapshot)
+				}
+				this.oldRef = ref;
+				ref.on('child_added', this.removeSnapshot);
 			}
 		});
 	</script>

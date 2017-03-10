@@ -1,6 +1,17 @@
 {
   "rules": {
     ".read": "auth != null",
-    ".write": "auth != null"
+    ".write": "auth != null",
+    "users" : {
+      "$uid" : {
+        "devices" : {
+          "$device" : {
+            "history" : {
+              // ".indexOn" : "timestamp"
+            }
+          }
+        }
+      }
+    }
   }
 }

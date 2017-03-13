@@ -154,7 +154,7 @@
 				//http://stackoverflow.com/questions/32004582/delete-firebase-data-older-than-2-hours
 				const ref = db.ref(`${this._computeDevicePath(this.user, this.device)}/history`)
 				.orderByKey()
-				.endAt(String(Date.now() - 2*24*60*60*1000))
+				.endAt(String(Date.now() - 60*60*1000))
 				.limitToLast(1);
 				if(this.oldRef) {
 					this.oldRef.off('child_added', this.removeSnapshot)

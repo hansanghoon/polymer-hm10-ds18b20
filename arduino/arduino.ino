@@ -103,6 +103,6 @@ String getTemperature() {
 //  Serial.print(".");
 //  Serial.print(Fract);
 //  Serial.print("\n");
-  return String(Whole) + "." + String(Fract);
+  return String(Whole) + "." + (Fract < 10 ? "0" : "") + String(Fract);
 }
 
